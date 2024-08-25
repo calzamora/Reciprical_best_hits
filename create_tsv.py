@@ -73,7 +73,7 @@ with open (zfish_table) as t:
                     zfish_table_dict[prot_id] = (spline[0],spline[2]) #set the velue equal to the tuple gene ID and Gene name 
 
 #using human protein id from H-to_zfishdb file pull relevent info 
-# i = 0
+i = 0
 human_gene_id: str = ""
 human_protein_ID: str = ""
 human_gene_name: str = ""
@@ -83,23 +83,36 @@ fish_gene_name: str = ""
 
 with (open(human_file) as fh1,
       open(zfish_file) as fh2,
-      open(out_file) as out):
+      open(out_file, "w") as out):
     while True:
         human_hit = fh1.readline()
         zfish_hit = fh2.readline()
-        # i += 1
+        i += 1
         # print(human_hit)
         # print(zfish_hit)
         if human_hit == "":
             break
-        # if i == 2:
-        #     break
+        if i == 2:
+            break
         split_human_hit = human_hit.split()
         split_zfish_hit = zfish_hit.split()
         #lets start pulling to info we need to print: 
-        human_protein_ID = split_human_hit[0]
-        fish_protein_ID = split_zfish_hit[0]
+        for line in fh1:
+            human_protein_ID = split_human_hit[0]
+            fish_protein_ID = split_zfish_hit[0]
+            human_gene_id = human_table_dict[human_protein_ID][0]
+            fish_gene_id = zfish_table_dict[fish_protein_ID][0]
+            human_gene_name = human_table_dict[human_protein_ID][1]
+            fish_gene_name = zfish_table_dict[fish_protein_ID][1]
+            out.write(f"{human_gene_id}\t{human_protein_ID}\t{human_gene_name}\t{fish_gene_id}\t{fish_protein_ID}\t{fish_gene_name}\n")
 
 
+        # print(human_protein_ID)
+        # print(human_gene_id)
+        # print(human_gene_name)
+        # print("")
+        # print(fish_protein_ID)
+        # print(fish_gene_id)
+        # print(fish_gene_name)
         # print(human_protein_ID)
         # print(zfish_protein_ID)
