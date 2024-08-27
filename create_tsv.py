@@ -107,7 +107,7 @@ with open(human_file) as fh1:
         if key in fish_dict and fish_dict[key] == value:
             k +=1
 print(len(fish_dict))
-print(f"number of times conditional is true "{k})
+print(k)
 
 
 j = 0
