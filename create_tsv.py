@@ -79,13 +79,13 @@ fish_dict = {}
 
 with open(zfish_file) as fh1:
     for line in fh1:
-        hit = fh1.readline()
-        split_hit = hit.split()
+        split_hit = line.split()
         query = split_hit[0]
         db = split_hit[1]
         fish_dict[query] = db
-
-# print(fish_dict)
+print(f"length of fish dict {len(fish_dict)}")
+# print(len(fish_dict))
+#print(fish_dict)
 
 
 #using human protein id from H-to_zfishdb file pull relevent info 
@@ -96,6 +96,18 @@ human_gene_name: str = ""
 fish_gene_id: str = ""
 fish_protein_ID: str = ""
 fish_gene_name: str = ""
+
+#i want to test if this check works:
+j = 0
+with open(human_file) as fh1:
+    for line in fh1:
+        split_hit = fh1.readline().split()
+        value = split_hit[0]
+        key = split_hit[1]
+        if key in fish_dict and fish_dict[key] == value:
+            j +=1
+# print(len(fish_dict))
+print(j)
 
 with (open(human_file) as fh1,
       open(zfish_file) as fh2,
@@ -110,20 +122,20 @@ with (open(human_file) as fh1,
             break
         # if i == 50:
         #     break
+        #lets start pulling to info we need to print: 
+        #pull all info from human file 
         split_human_hit = human_hit.split()
         split_zfish_hit = zfish_hit.split()
-        #lets start pulling to info we need to print: 
         human_protein_ID = split_human_hit[0]
         fish_protein_ID = split_zfish_hit[0]
+        human_gene_id = human_table_dict[human_protein_ID][0]
+        fish_gene_id = zfish_table_dict[fish_protein_ID][0]
+        human_gene_name = human_table_dict[human_protein_ID][1]
+        fish_gene_name = zfish_table_dict[fish_protein_ID][1]
+        #if the fish protein id is in the dictionary and the human protein ID matches
         if fish_protein_ID in fish_dict and fish_dict[fish_protein_ID] == human_protein_ID:
-            for line in fh1:
-                human_gene_id = human_table_dict[human_protein_ID][0]
-                fish_gene_id = zfish_table_dict[fish_protein_ID][0]
-                human_gene_name = human_table_dict[human_protein_ID][1]
-                fish_gene_name = zfish_table_dict[fish_protein_ID][1]
-                out.write(f"{human_gene_id}\t{human_protein_ID}\t{human_gene_name}\t{fish_gene_id}\t{fish_protein_ID}\t{fish_gene_name}\n")
-print(fish_protein_ID)
-print(human_protein_ID)
+            # for line in fh1:
+            out.write(f"{human_gene_id}\t{human_protein_ID}\t{human_gene_name}\t{fish_gene_id}\t{fish_protein_ID}\t{fish_gene_name}\n")
 
         # print(human_protein_ID)
         # print(human_gene_id)
