@@ -97,45 +97,57 @@ fish_gene_id: str = ""
 fish_protein_ID: str = ""
 fish_gene_name: str = ""
 
+k= 0 
 #i want to test if this check works:
-j = 0
 with open(human_file) as fh1:
     for line in fh1:
         split_hit = fh1.readline().split()
         value = split_hit[0]
         key = split_hit[1]
         if key in fish_dict and fish_dict[key] == value:
-            j +=1
-# print(len(fish_dict))
-print(j)
+            k +=1
+print(len(fish_dict))
+print(f"number of times conditional is true "{k})
 
+
+j = 0
 with (open(human_file) as fh1,
-      open(zfish_file) as fh2,
       open(out_file, "w") as out):
-    while True:
-        human_hit = fh1.readline()
-        zfish_hit = fh2.readline()
-        i += 1
-        # print(human_hit)
-        # print(zfish_hit)
-        if human_hit == "":
-            break
-        # if i == 50:
-        #     break
-        #lets start pulling to info we need to print: 
-        #pull all info from human file 
-        split_human_hit = human_hit.split()
-        split_zfish_hit = zfish_hit.split()
-        human_protein_ID = split_human_hit[0]
-        fish_protein_ID = split_zfish_hit[0]
-        human_gene_id = human_table_dict[human_protein_ID][0]
-        fish_gene_id = zfish_table_dict[fish_protein_ID][0]
-        human_gene_name = human_table_dict[human_protein_ID][1]
-        fish_gene_name = zfish_table_dict[fish_protein_ID][1]
-        #if the fish protein id is in the dictionary and the human protein ID matches
+        for line in fh1:
+            split_hit = fh1.readline().split()
+            human_protein_ID = split_hit[0]
+            fish_protein_ID = split_hit[1]
+            human_gene_id = human_table_dict[human_protein_ID][0]
+            fish_gene_id = zfish_table_dict[fish_protein_ID][0]
+            human_gene_name = human_table_dict[human_protein_ID][1]
+            fish_gene_name = zfish_table_dict[fish_protein_ID][1]
         if fish_protein_ID in fish_dict and fish_dict[fish_protein_ID] == human_protein_ID:
+            j +=1
             # for line in fh1:
             out.write(f"{human_gene_id}\t{human_protein_ID}\t{human_gene_name}\t{fish_gene_id}\t{fish_protein_ID}\t{fish_gene_name}\n")
+print(j)
+
+    # while True:
+    #     human_hit = fh1.readline()
+    #     zfish_hit = fh2.readline()
+    #     i += 1
+    #     # print(human_hit)
+    #     # print(zfish_hit)
+    #     if human_hit == "":
+    #         break
+    #     # if i == 50:
+    #     #     break
+    #     #lets start pulling to info we need to print: 
+    #     #pull all info from human file 
+    #     split_human_hit = human_hit.split()
+    #     split_zfish_hit = zfish_hit.split()
+    #     human_protein_ID = split_human_hit[0]
+    #     fish_protein_ID = split_zfish_hit[0]
+    #     human_gene_id = human_table_dict[human_protein_ID][0]
+    #     fish_gene_id = zfish_table_dict[fish_protein_ID][0]
+    #     human_gene_name = human_table_dict[human_protein_ID][1]
+    #     fish_gene_name = zfish_table_dict[fish_protein_ID][1]
+        #if the fish protein id is in the dictionary and the human protein ID matches
 
         # print(human_protein_ID)
         # print(human_gene_id)
