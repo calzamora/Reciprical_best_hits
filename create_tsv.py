@@ -34,43 +34,71 @@ zfish_table = args.zt
 zfish_file = args.zf
 out_file = args.o
 
+print(human_file)
 #create two dictionaries out of the TSV files:
 
 #dictionary of human biomart table 
 #key : protein id 
-#value : gene name, gene id (TUPLE)
-#only store info that has a protein stable id
+#value : gene id, gene name(TUPLE)
 
 human_table_dict = {}
 
 with open (human_table) as t:
     for line in t:
-        spline = line.split() #split line to turn table into list 
-        if len(spline) > 1: # removes entries that only have gene name and NO other info 
-            if spline[1] != "": # if the protein stable ID exists: 
-                prot_id = spline[1] #set key to protein stable ID 
-                if len(spline) < 3: #if the gene name does NOT exist 
-                    spline.append("") #append an empty string into index 2 so that every list is the same length 
-                if prot_id not in human_table_dict:
-                    human_table_dict[prot_id] = (spline[0],spline[2]) #set the velue equal to the tuple gene ID and Gene name 
+        spline = line.split() #split line to turn table into list  
+        if len(spline) < 2: # removes entries that only have gene name and NO other info 
+            pass
+        #next case is if its = to 2 then we need to figure out if the gene hame or the proeinID id is missing 
+        #do this by length -> the length is alwasy the same for the protein id adn gene id 
+        if len(spline) == 2:
+            if len(spline[1]) == 15: # human protein ID (in index pos 1) will alwasy equal 15 characters if the line contains the gene and protein id
+                gene_ID = spline[0]
+                protein_ID = spline[1]
+                human_table_dict [protein_ID] = (gene_ID,"")
+            elif len(spline[1]) != 15: #if it contains the gene_id and the gene name i dont care becasue I need the protein id
+                pass
+                # gene_name = spline[1]
+                # protein_ID = spline[0]
+                # human_table_dict [protein_ID] = ("",gene_name)
+                # pass
+        if len(spline) == 3: # 
+            gene_ID = spline[0]
+            protein_ID = spline[1]
+            gene_name = spline[2]
+            human_table_dict[protein_ID] = (gene_ID,gene_name)
 
+
+# print(human_table_dict)
 #dictionary of zfish biomart table 
 #key : protein id 
-#value : gene name, gene id (TUPLE)
-#only store info that has a protein stable id
+#value : gene id, gene name(TUPLE)
 
 zfish_table_dict = {}
 
+
 with open (zfish_table) as t:
     for line in t:
-        spline = line.split() #split line to turn table into list 
-        if len(spline) > 1: # removes entries that only have gene name and NO other info 
-            if spline[1] != "": # if the protein stable ID exists: 
-                prot_id = spline[1] #set key to protein stable ID 
-                if len(spline) < 3: #if the gene name does NOT exist 
-                    spline.append("") #append an empty string into index 2 so that every list is the same length 
-                if prot_id not in zfish_table_dict:
-                    zfish_table_dict[prot_id] = (spline[0],spline[2]) #set the velue equal to the tuple gene ID and Gene name 
+        spline = line.split() #split line to turn table into list  
+        if len(spline) < 2: # removes entries that only have gene name and NO other info 
+            pass
+        #next case is if its = to 2 then we need to figure out if the gene hame or the proeinID id is missing 
+        #do this by length -> the length is alwasy the same for the protein id adn gene id 
+        if len(spline) == 2:
+            if len(spline[1]) == 18: # human protein ID (in index pos 1) will alwasy equal 15 characters if the line contains the gene and protein id
+                gene_ID = spline[0]
+                protein_ID = spline[1]
+                zfish_table_dict [protein_ID] = (gene_ID,"")
+            elif len(spline[1]) != 18: #if it contains the gene_id and the gene name i dont care becasue I need the protein id
+                pass
+                # gene_name = spline[1]
+                # protein_ID = spline[0]
+                # human_table_dict [protein_ID] = ("",gene_name)
+                # pass
+        if len(spline) == 3: # 
+            gene_ID = spline[0]
+            protein_ID = spline[1]
+            gene_name = spline[2]
+            zfish_table_dict[protein_ID] = (gene_ID,gene_name)
 
 #create a dict w fish file 
 #key = QUERY proteinID -> feild 0 fish protein 
@@ -84,7 +112,8 @@ with open(zfish_file) as fh1:
         db = split_hit[1]
         fish_dict[query] = db
 print(f"length of fish dict {len(fish_dict)}")
-# print(len(fish_dict))
+print(len(fish_dict))
+print(fish_dict["ENSDARP00000096586"])
 #print(fish_dict)
 
 
@@ -97,64 +126,86 @@ fish_gene_id: str = ""
 fish_protein_ID: str = ""
 fish_gene_name: str = ""
 
+import os
+
 k= 0 
 #i want to test if this check works:
-with open(human_file) as fh1:
-    for line in fh1:
-        split_hit = fh1.readline().split()
-        value = split_hit[0]
-        key = split_hit[1]
-        if key in fish_dict and fish_dict[key] == value:
-            k +=1
-print(len(fish_dict))
-print(k)
-
-
-j = 0
 with (open(human_file) as fh1,
-      open(out_file, "w") as out):
-        for line in fh1:
-            split_hit = fh1.readline().split()
-            human_protein_ID = split_hit[0]
-            fish_protein_ID = split_hit[1]
-            human_gene_id = human_table_dict[human_protein_ID][0]
-            fish_gene_id = zfish_table_dict[fish_protein_ID][0]
-            human_gene_name = human_table_dict[human_protein_ID][1]
-            fish_gene_name = zfish_table_dict[fish_protein_ID][1]
-        if fish_protein_ID in fish_dict and fish_dict[fish_protein_ID] == human_protein_ID:
-            j +=1
-            # for line in fh1:
-            out.write(f"{human_gene_id}\t{human_protein_ID}\t{human_gene_name}\t{fish_gene_id}\t{fish_protein_ID}\t{fish_gene_name}\n")
-print(j)
+    open(out_file, "w") as fh2):
+    # print("working with file", os.getcwd(), human_file)
+    fh2.write(f"Human Gene ID\tHuman Protein ID\tHuman Gene Name\tZfish Gene ID\tZfishProtein ID\tZfish Gene Name\n")
+    for line in fh1:
+        split_hit = line.split()
+        Query_protein_ID = split_hit[0]
+        Database_protein_ID = split_hit[1]
+        if Database_protein_ID in fish_dict and fish_dict[Database_protein_ID] == Query_protein_ID:
+            Human_Gene_ID = human_table_dict[Query_protein_ID][0]
+            Human_Protein_ID = split_hit[0]
+            Human_Gene_Name = human_table_dict[Query_protein_ID][1]
+            Fish_Gene_ID = zfish_table_dict[Database_protein_ID][0]
+            Fish_Protein_ID = split_hit[1]
+            Fish_Gene_Name = zfish_table_dict[Database_protein_ID][1]
+            k +=1
+            fh2.write(f"{Human_Gene_ID}\t{Human_Protein_ID}\t{Human_Gene_Name}\t{Fish_Gene_ID}\t{Fish_Protein_ID}\t{Fish_Gene_Name}\n")
 
-    # while True:
-    #     human_hit = fh1.readline()
-    #     zfish_hit = fh2.readline()
-    #     i += 1
-    #     # print(human_hit)
-    #     # print(zfish_hit)
-    #     if human_hit == "":
-    #         break
-    #     # if i == 50:
-    #     #     break
-    #     #lets start pulling to info we need to print: 
-    #     #pull all info from human file 
-    #     split_human_hit = human_hit.split()
-    #     split_zfish_hit = zfish_hit.split()
-    #     human_protein_ID = split_human_hit[0]
-    #     fish_protein_ID = split_zfish_hit[0]
-    #     human_gene_id = human_table_dict[human_protein_ID][0]
-    #     fish_gene_id = zfish_table_dict[fish_protein_ID][0]
-    #     human_gene_name = human_table_dict[human_protein_ID][1]
-    #     fish_gene_name = zfish_table_dict[fish_protein_ID][1]
-        #if the fish protein id is in the dictionary and the human protein ID matches
+print(k)
+print(Human_Gene_ID)
+# print("")
+# print(Human_Protein_ID)
+# print("")
+# print(Human_Gene_Name)
+# print("")
+# print(Fish_Gene_ID)
+# print("")
+# print(Fish_Protein_ID)
+# print("")
+# print(Fish_Gene_Name)
+# # #NOTE I HVAE TO CHANGE THE WAY IM PULLING INFO BC THE DICTIONARIES STRUCTURE CHANGED 
+# j = 0
+# with (open(human_file) as fh1,
+#       open(out_file, "w") as out):
+#         for line in fh1:
+#             split_hit = fh1.readline().split()
+#             human_protein_ID = split_hit[0]
+#             fish_protein_ID = split_hit[1]
+#             human_gene_id = human_table_dict[human_protein_ID][0]
+#             fish_gene_id = zfish_table_dict[fish_protein_ID][0]
+#             human_gene_name = human_table_dict[human_protein_ID][1]
+#             fish_gene_name = zfish_table_dict[fish_protein_ID][1]
+#         if fish_protein_ID in fish_dict and fish_dict[fish_protein_ID] == human_protein_ID:
+#             j +=1
+#             # for line in fh1:
+#             out.write(f"{human_gene_id}\t{human_protein_ID}\t{human_gene_name}\t{fish_gene_id}\t{fish_protein_ID}\t{fish_gene_name}\n")
+# # print(j)
 
-        # print(human_protein_ID)
-        # print(human_gene_id)
-        # print(human_gene_name)
-        # print("")
-        # print(fish_protein_ID)
-        # print(fish_gene_id)
-        # print(fish_gene_name)
-        # print(human_protein_ID)
-        # print(zfish_protein_ID)
+# #     # while True:
+# #     #     human_hit = fh1.readline()
+# #     #     zfish_hit = fh2.readline()
+# #     #     i += 1
+# #     #     # print(human_hit)
+# #     #     # print(zfish_hit)
+# #     #     if human_hit == "":
+#     #         break
+#     #     # if i == 50:
+#     #     #     break
+#     #     #lets start pulling to info we need to print: 
+#     #     #pull all info from human file 
+#     #     split_human_hit = human_hit.split()
+#     #     split_zfish_hit = zfish_hit.split()
+#     #     human_protein_ID = split_human_hit[0]
+#     #     fish_protein_ID = split_zfish_hit[0]
+#     #     human_gene_id = human_table_dict[human_protein_ID][0]
+#     #     fish_gene_id = zfish_table_dict[fish_protein_ID][0]
+#     #     human_gene_name = human_table_dict[human_protein_ID][1]
+#     #     fish_gene_name = zfish_table_dict[fish_protein_ID][1]
+#         #if the fish protein id is in the dictionary and the human protein ID matches
+
+#         # print(human_protein_ID)
+#         # print(human_gene_id)
+#         # print(human_gene_name)
+#         # print("")
+#         # print(fish_protein_ID)
+#         # print(fish_gene_id)
+#         # print(fish_gene_name)
+#         # print(human_protein_ID)
+#         # print(zfish_protein_ID)
