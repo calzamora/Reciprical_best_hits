@@ -119,3 +119,49 @@ ENSG00000210112         MT-TM
 
 ok lets start scripting: 
 [create_tsv.py](create_tsv.py)
+
+ok I'm over filtering now - the dictionary fish_dict is too small ! 
+```
+05:59 PM calz Assignment_1 $ ./create_tsv.py -hf H-to_zfishdb_RBH.blastp -ht Human_mart_export_112.txt -zf Z_to_homodb_RBH.blastp -zt zfish_mart_export_112.txt -o test.tsv
+10822
+1993
+06:00 PM calz Assignment_1 $ wc -l Z_to_homodb_RBH.blastp 
+21644 Z_to_homodb_RBH.blastp
+```
+
+notes from leslie: 
+end goal: 1:1 RBH 
+filter out and keep just the things where the human protein matches the zebra fish AND visa versa (resiprical)
+
+and best is that there were no other matches
+
+also note:
+i should def rename my existing RBH script and files cause its really jsut deduplicating not RBH 
+
+I HAD A REALINE() AND A FOR LINE IN LINE 
+
+ok it works!! output file is the right number of lines 
+
+I need to do some renaming so that my scripts make sense 
+
+RBH.py is actually just de-duplicating the file so it now:
+
+[unique_hit.py](unique_hit.py)
+
+create_tsv.py is actaully creating the file with the real Resiprical Best Hits so I'm going to rename it
+
+[RBH.py](RBH.py)
+
+## OK so now all important scripts are: 
+
+**script to pull out best hits :**\
+[best_hits.py](best_hit.py)
+
+**script to de-duplicate hits - retaining only unique hits** \
+[unique_hits.py](unique_hit.py)
+
+**Reciprocal Best Hits File**\
+[RBH.py](RBH.py)
+
+## Final output file: 
+[Human_Zebrafish_RBH.tsv](Human_Zebrafish_RBH.tsv)
